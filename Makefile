@@ -19,7 +19,7 @@
 # directory of the binary download (the directory that has bin/, lib/, include/
 # and other directories inside).
 # See the build_vs_released_binary.sh script for an example.
-LLVM_SRC_PATH := $$HOME/llvm/llvm_svn_rw
+LLVM_SRC_PATH := /usr/lib/llvm-3.8
 
 # LLVM_BUILD_PATH is the directory in which you built LLVM - where you ran
 # configure or cmake.
@@ -29,8 +29,8 @@ LLVM_SRC_PATH := $$HOME/llvm/llvm_svn_rw
 # reflects a debug build with autotools (configure & make), and needs to be
 # changed when a Ninja build is used (see below for example). For linking vs. a
 # binary build of LLVM, point it to the bin/ directory.
-LLVM_BUILD_PATH := $$HOME/llvm/build/svn-make-debug
-LLVM_BIN_PATH := $(LLVM_BUILD_PATH)/Debug+Asserts/bin
+LLVM_BUILD_PATH := /usr/lib/llvm-3.8
+LLVM_BIN_PATH := $(LLVM_BUILD_PATH)/bin
 
 # Run make BUILD_NINJA=1 to enable these paths
 ifdef BUILD_NINJA
@@ -52,6 +52,7 @@ $(info -----------------------------------------------)
 # problem, build with CXX set to a modern clang++ binary instead of g++.
 CXX := g++
 CXXFLAGS := -fno-rtti -O0 -g
+# PLUGIN_CXXFLAGS := 
 PLUGIN_CXXFLAGS := -fpic
 
 LLVM_CXXFLAGS := `$(LLVM_BIN_PATH)/llvm-config --cxxflags`
@@ -122,6 +123,7 @@ all: make_builddir \
 	$(BUILDDIR)/matchers_replacements \
 	$(BUILDDIR)/matchers_rewriter \
 	$(BUILDDIR)/tooling_sample \
+	$(BUILDDIR)/tooling_sample_plugin.so \
 	$(BUILDDIR)/plugin_print_funcnames.so
 
 .PHONY: test
@@ -180,6 +182,10 @@ $(BUILDDIR)/matchers_replacements: $(SRC_CLANG_DIR)/matchers_replacements.cpp
 $(BUILDDIR)/matchers_rewriter: $(SRC_CLANG_DIR)/matchers_rewriter.cpp
 	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
 		$(CLANG_LIBS) $(LLVM_LDFLAGS) -o $@
+
+$(BUILDDIR)/tooling_sample_plugin.so: $(SRC_CLANG_DIR)/tooling_sample_plugin.cpp
+	$(CXX) $(PLUGIN_CXXFLAGS) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
+		$(PLUGIN_LDFLAGS) $(LLVM_LDFLAGS_NOLIBS) -o $@
 
 $(BUILDDIR)/plugin_print_funcnames.so: $(SRC_CLANG_DIR)/plugin_print_funcnames.cpp
 	$(CXX) $(PLUGIN_CXXFLAGS) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \

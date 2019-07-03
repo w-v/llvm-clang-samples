@@ -1,3 +1,4 @@
+#include <iostream>
 bool foo()
 {
     return true;
@@ -12,6 +13,7 @@ void bar()
 
 int main()
 {
+  std::cout << "hu"<< std::endl;
     bar();
     if (foo())
         bar();

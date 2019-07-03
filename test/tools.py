@@ -65,6 +65,8 @@ class SamplesTestCase(unittest.TestCase):
         input_path = os.path.join(self.inputs_dir, input)
         plugin = os.path.join(self.build_dir, plugin)
         optargs = ['-load', plugin, '--disable-output'] + optargs + [input_path]
+        print(opt_path)
+        print(optargs)
         rc, stdout = run_exe(opt_path, optargs)
         stdout = stdout.decode('utf-8')
         self.assertEqual(rc, 0)
